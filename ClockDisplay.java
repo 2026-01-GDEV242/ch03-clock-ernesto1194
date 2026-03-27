@@ -27,29 +27,32 @@ public class ClockDisplay
     private NumberDisplay hours;
     private NumberDisplay minutes;
     private String displayString;    // simulates the actual display
+    private String meridian;         
     
     /**
      * Constructor for ClockDisplay objects. This constructor 
      * creates a new clock set at 00:00.
      */
     public ClockDisplay()
-    {
-        hours = new NumberDisplay(24);
-        minutes = new NumberDisplay(60);
-        updateDisplay();
-    }
+{
+    hours = new NumberDisplay(12);
+    minutes = new NumberDisplay(60);
+    meridian = "AM"; 
+    updateDisplay();
+}
 
     /**
      * Constructor for ClockDisplay objects. This constructor
      * creates a new clock set at the time specified by the 
      * parameters.
      */
-    public ClockDisplay(int hour, int minute)
-    {
-        hours = new NumberDisplay(24);
-        minutes = new NumberDisplay(60);
-        setTime(hour, minute);
-    }
+    public ClockDisplay(int hour, int minute, String meridian)
+{
+    hours = new NumberDisplay(12);  
+    minutes = new NumberDisplay(60);        
+    this.meridian = meridian;  
+    setTime(hour, minute);
+}
 
     /**
      * This method should get called once every minute - it makes
@@ -58,13 +61,23 @@ public class ClockDisplay
     public void timeTick()
     {
         minutes.increment();
-        if(minutes.getValue() == 0) {  // it just rolled over!
-            hours.increment();
-        }
-        updateDisplay();
-    }
 
-    /**
+        if(minutes.getValue() == 0) {   
+            hours.increment();
+
+            
+            if(hours.getValue() == 0) {
+                if(meridian.equals("AM")) {
+                    meridian = "PM";
+                } else {
+                    meridian = "AM";
+                }
+            }
+        }
+
+        updateDisplay();
+        
+    }    /**
      * Set the time of the display to the specified hour and
      * minute.
      */
@@ -88,7 +101,22 @@ public class ClockDisplay
      */
     private void updateDisplay()
     {
-        displayString = hours.getDisplayValue() + ":" + 
-                        minutes.getDisplayValue();
+        int displayHour = hours.getValue();
+
+        
+        if(displayHour == 0) {
+            displayHour = 12;
+        }
+
+        String hourString;
+        if(displayHour < 10) {
+            hourString = "0" + displayHour;
+        } else {
+            hourString = "" + displayHour;
+        }
+
+        displayString = hourString + ":" +
+                        minutes.getDisplayValue() +
+                        " " + meridian;
     }
 }
